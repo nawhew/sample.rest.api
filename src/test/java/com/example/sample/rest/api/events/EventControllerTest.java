@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @WebMvcTest
-@AutoConfigureMockMvc
+//@AutoConfigureMockMvc
 public class EventControllerTest {
 
     @Autowired
@@ -46,7 +46,7 @@ public class EventControllerTest {
                 .location("my home")
                 .build();
 
-        System.out.println("data : " + objectMapper.writeValueAsString(event));
+//        System.out.println("data : " + objectMapper.writeValueAsString(event));
 
         /*
          * MediaType.APPLICATION_JSON_UTF8 @Deprecated
@@ -57,6 +57,7 @@ public class EventControllerTest {
         */
         mockMvc.perform(post("/api/events")
                         .contentType(MediaType.APPLICATION_JSON)
+//                        .characterEncoding("UTF-8")
                         .accept(MediaTypes.HAL_JSON) // 어떤 타입의 응답을 원하는지 AcceptHeader 통해 알려 줌
                         .content(objectMapper.writeValueAsString(event))
                         )
