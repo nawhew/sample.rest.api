@@ -12,7 +12,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Controller
-// Class안의 모든 Handler들은 HAL_FORMS_JSON_VALUE이라는 content type으로 응답을 보낼것이다.
+// Class안의 모든 Handler들은 HAL_JSON_VALUE이라는 content type으로 응답을 보낼것이다.
 @RequestMapping(value = "/api/events", produces = MediaTypes.HAL_JSON_VALUE)
 @Slf4j
 public class EventController {
