@@ -1,6 +1,7 @@
 package com.example.sample.rest.api.events;
 
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
@@ -20,9 +21,12 @@ public class EventController {
 
     private final EventRepository eventRepository;
 
+    private final ModelMapper modelMapper;
+
     @Autowired
-    public EventController(EventRepository eventRepository) {
+    public EventController(EventRepository eventRepository, ModelMapper modelMapper) {
         this.eventRepository = eventRepository;
+        this.modelMapper = modelMapper;
     }
 
     /**
@@ -31,9 +35,18 @@ public class EventController {
      * @return 
      */
     @PostMapping
-    public @ResponseBody ResponseEntity createEvent(@RequestBody Event event) {
+    public @ResponseBody ResponseEntity createEvent(@RequestBody EventDto eventDto) {
 
+        /*
+        * 입력값을 제한하기 위해 DTO를 덮어 쓰고 파라미터를 변경
+        * Event -> EventDto
+        * 그리고 Event를 새로 생성 할 때는 ModelMapper를 사용하여 간단하게 EventDto를 Event로 변환
+        * 이때 만든 Event는 기존과 다르게 파라미터로 받은 것이 아니기 때문에
+        * 테스트부분에서 Mockito로 Mocking한 부분에서 객체가 달라서 처리가 안됨.*/
+        Event event = this.modelMapper.map(eventDto, Event.class);
+        log.debug("modelmapper eventDto convert event : " + event.toString());
         Event newEvent = this.eventRepository.save(event);
+
 
         /*
         * Link를 생성하여 URI로 변환 : /api/events/{id}
@@ -45,15 +58,14 @@ public class EventController {
         URI createdUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
 
         // id setting
-        event.setId(10); //우선 임의의 값 세팅
-        System.out.println("event.toString() :: " + event.toString());
+//        event.setId(10); //우선 임의의 값 세팅
         // return no body
         //return ResponseEntity.created(createdUri).build();
         return ResponseEntity.created(createdUri).body(event);
     }
 
     /**
-     * 이벤트 생성
+     * 이벤트 생성 : 변경 전 소스
      * Header에 location 정보 반환 (/api/events/{id})
      * @return
      */
@@ -62,14 +74,15 @@ public class EventController {
 
         // id setting
         event.setId(10); //우선 임의의 값 세팅
-        System.out.println("event.toString() :: " + event.toString());
 
         /*
          * 클래스에 @RequestMapping 쓰기 전
          * 변경 이유는 아래와 같이 하는 경우 메소드에 파라미터가 추가 될 떄마다 수정해주어야 해서
          * 링크를 클래스에 달아서 변경
          * */
-        URI createdUri = linkTo(methodOn(EventController.class).createEvent(event)).slash("{id}")
+//        URI createdUri = linkTo(methodOn(EventController.class).createEvent(event)).slash("{id}")
+        // 컴파일 오류를 방지하기 위해 null 매핑
+        URI createdUri = linkTo(methodOn(EventController.class).createEvent(null)).slash("{id}")
                 .toUri();
 
         return ResponseEntity.created(createdUri).body(event);
