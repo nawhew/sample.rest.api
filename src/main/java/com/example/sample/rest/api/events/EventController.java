@@ -1,6 +1,7 @@
 package com.example.sample.rest.api.events;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @Slf4j
 public class EventController {
 
+    private final EventRepository eventRepository;
+
+    @Autowired
+    public EventController(EventRepository eventRepository) {
+        this.eventRepository = eventRepository;
+    }
+
     /**
      * 이벤트 생성
      * Header에 location 정보 반환 (/api/events/{id})
@@ -25,13 +33,16 @@ public class EventController {
     @PostMapping
     public @ResponseBody ResponseEntity createEvent(@RequestBody Event event) {
 
+        Event newEvent = this.eventRepository.save(event);
+
         /*
         * Link를 생성하여 URI로 변환 : /api/events/{id}
         * used link in method (if used link in class : linkTo(EventController.class))
         * ControllerLinkBuilder @Deprecated
         *  : ControllerLinkBuilder replaced WebMvcLinkBuilder.
         * */
-        URI createdUri = linkTo(EventController.class).slash("{id}").toUri();
+//        URI createdUri = linkTo(EventController.class).slash("{id}").toUri();
+        URI createdUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
 
         // id setting
         event.setId(10); //우선 임의의 값 세팅

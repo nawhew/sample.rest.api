@@ -2,9 +2,7 @@ package com.example.sample.rest.api.events;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -42,6 +40,7 @@ public class Event {
 
     private boolean free;
 
+    @Enumerated(EnumType.STRING)
     private EventStatus eventStatus;
 
 }
