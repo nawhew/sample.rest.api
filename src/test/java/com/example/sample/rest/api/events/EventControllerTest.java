@@ -46,8 +46,8 @@ public class EventControllerTest {
     public void createEvent() throws Exception {
 
         // given
-        Event event = Event.builder()
-                .id(100)
+        // Event -> EventDto 변경
+        EventDto eventDto = EventDto.builder()
                 .name("spring we")
                 .description("REST API Class")
                 .beginEventDateTime(LocalDateTime.of(2020, 10, 15, 16, 55))
@@ -58,8 +58,6 @@ public class EventControllerTest {
                 .maxPrice(200)
                 .limitOfEnrollment(100)
                 .location("my home")
-                .free(true)
-                .offline(true)
                 .build();
 
         /* Mockbean을 사용하면 Null값이 리턴되기 때문에
@@ -82,7 +80,7 @@ public class EventControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .characterEncoding("UTF-8")
                         .accept(MediaTypes.HAL_JSON) // 어떤 타입의 응답을 원하는지 AcceptHeader 통해 알려 줌
-                        .content(objectMapper.writeValueAsString(event))
+                        .content(objectMapper.writeValueAsString(eventDto))
                         )
                 .andExpect(status().isCreated()) // response code 201
                 .andExpect(jsonPath("id").exists()) // id가 있는지 여부 체크
@@ -96,6 +94,37 @@ public class EventControllerTest {
                 .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()))
                 .andDo(print())
                 ;
+    }
+
+    @Test
+    public void createEvent_BadRequest() throws Exception {
+
+        // given
+        Event event = Event.builder()
+                .id(100)
+                .name("spring we")
+                .description("REST API Class - Bad Request Test")
+                .beginEventDateTime(LocalDateTime.of(2020, 10, 15, 16, 55))
+                .closeEnrollmentDateTime(LocalDateTime.of(2020, 10, 16, 16, 55))
+                .beginEventDateTime(LocalDateTime.of(2020, 10, 15, 16, 55))
+                .endEventDateTime(LocalDateTime.of(2020, 10, 16, 16, 55))
+                .basePrice(100)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("my home")
+                .free(true)
+                .offline(false)
+                .build();
+
+        mockMvc.perform(post("/api/events")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(event))
+                )
+                .andExpect(status().isBadRequest())
+                .andDo(print())
+        ;
     }
 
 }
