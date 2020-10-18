@@ -62,6 +62,7 @@ public class EventController {
         * 이때 만든 Event는 기존과 다르게 파라미터로 받은 것이 아니기 때문에
         * 테스트부분에서 Mockito로 Mocking한 부분에서 객체가 달라서 처리가 안됨.*/
         Event event = this.modelMapper.map(eventDto, Event.class);
+        event.update();
         log.debug("modelmapper eventDto convert event : " + event.toString());
         Event newEvent = this.eventRepository.save(event);
 
