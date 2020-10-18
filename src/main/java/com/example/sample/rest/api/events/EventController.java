@@ -2,12 +2,14 @@ package com.example.sample.rest.api.events;
 
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.internal.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -35,7 +37,12 @@ public class EventController {
      * @return 
      */
     @PostMapping
-    public @ResponseBody ResponseEntity createEvent(@RequestBody EventDto eventDto) {
+    public @ResponseBody ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
+
+        // return Bad Request
+        if(errors.hasErrors()) {
+            return ResponseEntity.badRequest().build();
+        }
 
         /*
         * 입력값을 제한하기 위해 DTO를 덮어 쓰고 파라미터를 변경
@@ -82,7 +89,7 @@ public class EventController {
          * */
 //        URI createdUri = linkTo(methodOn(EventController.class).createEvent(event)).slash("{id}")
         // 컴파일 오류를 방지하기 위해 null 매핑
-        URI createdUri = linkTo(methodOn(EventController.class).createEvent(null)).slash("{id}")
+        URI createdUri = linkTo(methodOn(EventController.class).createEvent(null, null)).slash("{id}")
                 .toUri();
 
         return ResponseEntity.created(createdUri).body(event);
