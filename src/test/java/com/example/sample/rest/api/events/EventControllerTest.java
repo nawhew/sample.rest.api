@@ -153,6 +153,13 @@ public class EventControllerTest {
                         .content(objectMapper.writeValueAsString(eventDto))
                         )
                 .andExpect(status().isBadRequest())
+                // 응답(오류)메세지에 있는 json의 배열 안에 아래의 값들이 있기를 바람
+                // 아래의 값들은 기본적으로 Errors에 들어 있는 값들!
+                .andExpect(jsonPath("$[0].objectName").exists())
+                .andExpect(jsonPath("$[0].field").exists())
+                .andExpect(jsonPath("$[0].defaultMessage").exists())
+                .andExpect(jsonPath("$[0].code").exists())
+//                .andExpect(jsonPath("$[0].rejectValue").exists()) // only field error
                 .andDo(print())
                 ;
     }

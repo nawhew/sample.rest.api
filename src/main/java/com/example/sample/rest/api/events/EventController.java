@@ -45,14 +45,14 @@ public class EventController {
         // request body mapping validate error return Bad-Request
         if(errors.hasErrors()) {
             log.error("eventDto request body mapping validate has error.");
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(errors);
         }
 
         // event validate error retrun Bad-Request
         this.eventValidator.vaildate(eventDto, errors);
         if(errors.hasErrors()) {
             log.error("eventValidation has error.");
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(errors);
         }
 
         /*
