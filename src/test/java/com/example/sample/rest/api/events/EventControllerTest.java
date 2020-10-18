@@ -1,5 +1,6 @@
 package com.example.sample.rest.api.events;
 
+import com.example.sample.rest.api.common.TestDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -43,6 +44,7 @@ public class EventControllerTest {
     EventRepository eventRepository;*/
 
     @Test
+    @TestDescription("정상적으로 이벤트를 생성하는 테스트")
     public void createEvent() throws Exception {
 
         // given
@@ -97,6 +99,7 @@ public class EventControllerTest {
     }
 
     @Test
+    @TestDescription("입력 받을 수 없는 값을 사용한 경우에 오류가 발생하는 테스트")
     public void createEvent_BadRequest() throws Exception {
 
         // given
@@ -128,6 +131,7 @@ public class EventControllerTest {
     }
 
     @Test
+    @TestDescription("입력 값이 비어있는 경우에 오류가 발생하는 테스트")
     public void createEvent_Bad_Request_Empty_Input() throws Exception {
         EventDto eventDto = EventDto.builder()
                 .name("spring we")
