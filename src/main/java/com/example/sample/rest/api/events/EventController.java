@@ -2,11 +2,11 @@ package com.example.sample.rest.api.events;
 
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.internal.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,10 +25,13 @@ public class EventController {
 
     private final ModelMapper modelMapper;
 
+    private final EventValidator eventValidator;
+
     @Autowired
-    public EventController(EventRepository eventRepository, ModelMapper modelMapper) {
+    public EventController(EventRepository eventRepository, ModelMapper modelMapper, EventValidator eventValidator) {
         this.eventRepository = eventRepository;
         this.modelMapper = modelMapper;
+        this.eventValidator = eventValidator;
     }
 
     /**
@@ -39,8 +42,16 @@ public class EventController {
     @PostMapping
     public @ResponseBody ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
 
-        // return Bad Request
+        // request body mapping validate error return Bad-Request
         if(errors.hasErrors()) {
+            log.error("eventDto request body mapping validate has error.");
+            return ResponseEntity.badRequest().build();
+        }
+
+        // event validate error retrun Bad-Request
+        this.eventValidator.vaildate(eventDto, errors);
+        if(errors.hasErrors()) {
+            log.error("eventValidation has error.");
             return ResponseEntity.badRequest().build();
         }
 

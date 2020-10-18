@@ -50,7 +50,7 @@ public class EventControllerTest {
         EventDto eventDto = EventDto.builder()
                 .name("spring we")
                 .description("REST API Class")
-                .beginEventDateTime(LocalDateTime.of(2020, 10, 15, 16, 55))
+                .beginEnrollmentDateTime(LocalDateTime.of(2020, 10, 15, 16, 55))
                 .closeEnrollmentDateTime(LocalDateTime.of(2020, 10, 16, 16, 55))
                 .beginEventDateTime(LocalDateTime.of(2020, 10, 15, 16, 55))
                 .endEventDateTime(LocalDateTime.of(2020, 10, 16, 16, 55))
@@ -104,7 +104,7 @@ public class EventControllerTest {
                 .id(100)
                 .name("spring we")
                 .description("REST API Class - Bad Request Test")
-                .beginEventDateTime(LocalDateTime.of(2020, 10, 15, 16, 55))
+                .beginEnrollmentDateTime(LocalDateTime.of(2020, 10, 15, 16, 55))
                 .closeEnrollmentDateTime(LocalDateTime.of(2020, 10, 16, 16, 55))
                 .beginEventDateTime(LocalDateTime.of(2020, 10, 15, 16, 55))
                 .endEventDateTime(LocalDateTime.of(2020, 10, 16, 16, 55))
@@ -129,7 +129,18 @@ public class EventControllerTest {
 
     @Test
     public void createEvent_Bad_Request_Empty_Input() throws Exception {
-        EventDto eventDto = EventDto.builder().build();
+        EventDto eventDto = EventDto.builder()
+                .name("spring we")
+                .description("REST API Class")
+                .beginEnrollmentDateTime(LocalDateTime.of(2020, 10, 15, 16, 55))
+                .closeEnrollmentDateTime(LocalDateTime.of(2020, 10, 14, 16, 55))
+                .beginEventDateTime(LocalDateTime.of(2020, 10, 13, 16, 55))
+                .endEventDateTime(LocalDateTime.of(2020, 10, 12, 16, 55))
+                .basePrice(1100)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("my home")
+                .build();
 
         this.mockMvc.perform(post("/api/events")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -138,6 +149,7 @@ public class EventControllerTest {
                         .content(objectMapper.writeValueAsString(eventDto))
                         )
                 .andExpect(status().isBadRequest())
+                .andDo(print())
                 ;
     }
 
