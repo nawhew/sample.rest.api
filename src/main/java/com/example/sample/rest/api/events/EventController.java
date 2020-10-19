@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
@@ -74,13 +75,21 @@ public class EventController {
         *  : ControllerLinkBuilder replaced WebMvcLinkBuilder.
         * */
 //        URI createdUri = linkTo(EventController.class).slash("{id}").toUri();
-        URI createdUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
+        WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
+        URI createdUri = selfLinkBuilder.toUri();
 
-        // id setting
-//        event.setId(10); //우선 임의의 값 세팅
+        // RepresentationModel을 상속받은 Resource를 사용하면 link 데이터를 추가 할 수 있다.
+        EventResource eventResource = new EventResource(event);
+        eventResource.add(linkTo(EventController.class).withRel("query-events"));
+//        eventResource.add(selfLinkBuilder.withSelfRel());
+        eventResource.add(selfLinkBuilder.withRel("update-event"));
+
         // return no body
         //return ResponseEntity.created(createdUri).build();
-        return ResponseEntity.created(createdUri).body(event);
+        // return body
+        //return ResponseEntity.created(createdUri).body(event);
+        // return body and Hateoas link data
+        return ResponseEntity.created(createdUri).body(eventResource);
     }
 
     /**

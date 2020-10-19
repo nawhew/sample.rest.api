@@ -54,8 +54,8 @@ public class EventControllerTest {
                 .description("REST API Class")
                 .beginEnrollmentDateTime(LocalDateTime.of(2020, 10, 15, 16, 55))
                 .closeEnrollmentDateTime(LocalDateTime.of(2020, 10, 16, 16, 55))
-                .beginEventDateTime(LocalDateTime.of(2020, 10, 15, 16, 55))
-                .endEventDateTime(LocalDateTime.of(2020, 10, 16, 16, 55))
+                .beginEventDateTime(LocalDateTime.of(2020, 10, 17, 16, 55))
+                .endEventDateTime(LocalDateTime.of(2020, 10, 18, 16, 55))
                 .basePrice(100)
                 .maxPrice(200)
                 .limitOfEnrollment(100)
@@ -92,9 +92,14 @@ public class EventControllerTest {
                 .andExpect(header().exists(HttpHeaders.LOCATION))
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, MediaTypes.HAL_JSON_VALUE))
 //                .andExpect(jsonPath("id").value(Matchers.not(100)))
-                .andExpect(jsonPath("free").value(Matchers.not(false)))
-                .andExpect(jsonPath("offline").value(Matchers.not(true)))
+                .andExpect(jsonPath("free").value(false))
+                .andExpect(jsonPath("offline").value(Matchers.not(false)))
                 .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()))
+                // HATEOAS link
+                .andExpect(jsonPath("_links.self").exists())
+//                .andExpect(jsonPath("_link.profile").exists())
+                .andExpect(jsonPath("_links.query-events").exists())
+                .andExpect(jsonPath("_links.update-event").exists())
                 .andDo(print())
                 ;
     }
