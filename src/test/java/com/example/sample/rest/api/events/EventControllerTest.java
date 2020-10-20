@@ -22,7 +22,11 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.*;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -108,7 +112,55 @@ public class EventControllerTest {
                 .andExpect(jsonPath("_links.update-event").exists())
                 .andDo(print())
                 // Spring RestDocs
-                .andDo(document("create-event")) // document name
+                .andDo(document("create-event" // document name
+                        , links( // link snippet 추가 (links.adoc)
+                                linkWithRel("self").description("link to self")
+                                , linkWithRel("query-events").description("link to query-events")
+                                , linkWithRel("update-event").description("link to update an existing event")
+                        )
+                        , requestHeaders( // request header snippet 추가
+                                headerWithName(HttpHeaders.ACCEPT).description("accept header")
+                                , headerWithName(HttpHeaders.CONTENT_TYPE).description("content type")
+                        )
+                        , requestFields( // request field snippet 추가
+                                fieldWithPath("name").description("event name")
+                                , fieldWithPath("description").description("event desc")
+                                , fieldWithPath("beginEnrollmentDateTime").description("event begin enrollment date time")
+                                , fieldWithPath("closeEnrollmentDateTime").description("event close enrollment date time")
+                                , fieldWithPath("beginEventDateTime").description("event begin date time")
+                                , fieldWithPath("endEventDateTime").description("event end date time")
+                                , fieldWithPath("location").description("event location")
+                                , fieldWithPath("basePrice").description("event base price")
+                                , fieldWithPath("maxPrice").description("event max price")
+                                , fieldWithPath("limitOfEnrollment").description("event limit enrollment (max)")
+                        )
+                        , responseHeaders( // response header snippet 추가
+                                headerWithName(HttpHeaders.LOCATION).description("location")
+                                , headerWithName(HttpHeaders.CONTENT_TYPE).description("content type")
+                        )
+                        , responseFields( // response field snippet 추가
+                                fieldWithPath("id").description("identifier of new event")
+                                , fieldWithPath("name").description("event name")
+                                , fieldWithPath("description").description("event desc")
+                                , fieldWithPath("beginEnrollmentDateTime").description("event begin enrollment date time")
+                                , fieldWithPath("closeEnrollmentDateTime").description("event close enrollment date time")
+                                , fieldWithPath("beginEventDateTime").description("event begin date time")
+                                , fieldWithPath("endEventDateTime").description("event end date time")
+                                , fieldWithPath("location").description("event location")
+                                , fieldWithPath("basePrice").description("event base price")
+                                , fieldWithPath("maxPrice").description("event max price")
+                                , fieldWithPath("limitOfEnrollment").description("event limit enrollment (max)")
+                                , fieldWithPath("free").description("it tells if this event is free or not")
+                                , fieldWithPath("offline").description("it tells if this event is offline or not(online)")
+                                , fieldWithPath("eventStatus").description("event status")
+                                /* 위에 links에서 체크했지만 현재 Restdocs에서는 어쩔수가 없음.
+                                 * responseFields를 relaxedResponseFields로 변경하여 일부만 체크하게 해도 되지만,
+                                 * 전체를 체크하지 않고 일부만 문서화 하기 때문에... 비추!*/
+                                , fieldWithPath("self").description("link to self")
+                                , fieldWithPath("query-events").description("link to query-events")
+                                , fieldWithPath("update-event").description("link to update an existing event")
+                        )
+                    ))
                 ;
     }
 
