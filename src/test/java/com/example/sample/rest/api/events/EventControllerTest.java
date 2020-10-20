@@ -117,6 +117,7 @@ public class EventControllerTest {
                                 linkWithRel("self").description("link to self")
                                 , linkWithRel("query-events").description("link to query-events")
                                 , linkWithRel("update-event").description("link to update an existing event")
+                                , linkWithRel("profile").description("link to profile (self description message")
                         )
                         , requestHeaders( // request header snippet 추가
                                 headerWithName(HttpHeaders.ACCEPT).description("accept header")
@@ -156,9 +157,10 @@ public class EventControllerTest {
                                 /* 위에 links에서 체크했지만 현재 Restdocs에서는 어쩔수가 없음.
                                  * responseFields를 relaxedResponseFields로 변경하여 일부만 체크하게 해도 되지만,
                                  * 전체를 체크하지 않고 일부만 문서화 하기 때문에... 비추!*/
-                                , fieldWithPath("self").description("link to self")
-                                , fieldWithPath("query-events").description("link to query-events")
-                                , fieldWithPath("update-event").description("link to update an existing event")
+                                , fieldWithPath("_links.self.href").description("link to self")
+                                , fieldWithPath("_links.query-events.href").description("link to query-events")
+                                , fieldWithPath("_links.update-event.href").description("link to update an existing event")
+                                , fieldWithPath("_links.profile.href").description("link to profile (self description message")
                         )
                     ))
                 ;

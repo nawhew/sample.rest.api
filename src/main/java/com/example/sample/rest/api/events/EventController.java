@@ -3,6 +3,8 @@ package com.example.sample.rest.api.events;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Links;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
@@ -81,6 +83,10 @@ public class EventController {
         // RepresentationModel을 상속받은 Resource를 사용하면 link 데이터를 추가 할 수 있다.
         EventResource eventResource = new EventResource(event);
         eventResource.add(linkTo(EventController.class).withRel("query-events"));
+        // Deprecated Link(String) constructor
+//        eventResource.add(new Link("/docs/index-kr.html#resources-events-create").withRel("profile"));
+        eventResource.add(Link.of("/docs/index-kr.html#resources-events-create").withRel("profile"));
+
 //        eventResource.add(selfLinkBuilder.withSelfRel());
         eventResource.add(selfLinkBuilder.withRel("update-event"));
 
