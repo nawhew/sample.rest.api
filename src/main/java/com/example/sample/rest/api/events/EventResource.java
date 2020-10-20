@@ -1,12 +1,14 @@
 package com.example.sample.rest.api.events;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
-public class EventResource extends RepresentationModel {
+/*if use generics, RepresentationModel change EntityModel<T> */
+public class EventResource extends EntityModel<Event> {
 
     @JsonUnwrapped
     private Event event;

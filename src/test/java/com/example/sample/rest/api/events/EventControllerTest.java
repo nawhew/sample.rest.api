@@ -223,11 +223,13 @@ public class EventControllerTest {
                 .andExpect(status().isBadRequest())
                 // 응답(오류)메세지에 있는 json의 배열 안에 아래의 값들이 있기를 바람
                 // 아래의 값들은 기본적으로 Errors에 들어 있는 값들!
-                .andExpect(jsonPath("$[0].objectName").exists())
-                .andExpect(jsonPath("$[0].field").exists())
-                .andExpect(jsonPath("$[0].defaultMessage").exists())
-                .andExpect(jsonPath("$[0].code").exists())
+                // JsonArray는 @JsonUnwrapped로 Unwrapped되지 않아 최상단의 배열에 있던 것을 변경($[n].* -> errors[n].*)
+                .andExpect(jsonPath("errors[0].objectName").exists())
+                .andExpect(jsonPath("errors[0].field").exists())
+                .andExpect(jsonPath("errors[0].defaultMessage").exists())
+                .andExpect(jsonPath("errors[0].code").exists())
 //                .andExpect(jsonPath("$[0].rejectValue").exists()) // only field error
+                .andExpect(jsonPath("_links.index").exists())
                 .andDo(print())
                 ;
     }

@@ -1,5 +1,7 @@
 package com.example.sample.rest.api.events;
 
+import com.example.sample.rest.api.common.ErrorsResource;
+import com.example.sample.rest.api.index.IndexController;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,14 +50,14 @@ public class EventController {
         // request body mapping validate error return Bad-Request
         if(errors.hasErrors()) {
             log.error("eventDto request body mapping validate has error.");
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
 
         // event validate error retrun Bad-Request
         this.eventValidator.vaildate(eventDto, errors);
         if(errors.hasErrors()) {
             log.error("eventValidation has error.");
-            return ResponseEntity.badRequest().body(errors);
+            return badRequest(errors);
         }
 
         /*
@@ -96,6 +98,10 @@ public class EventController {
         //return ResponseEntity.created(createdUri).body(event);
         // return body and Hateoas link data
         return ResponseEntity.created(createdUri).body(eventResource);
+    }
+
+    private ResponseEntity badRequest(Errors errors) {
+        return ResponseEntity.badRequest().body(new ErrorsResource(errors));
     }
 
     /**
