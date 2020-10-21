@@ -1,7 +1,6 @@
 package com.example.sample.rest.api.events;
 
 import com.example.sample.rest.api.common.ErrorsResource;
-import com.example.sample.rest.api.index.IndexController;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -146,5 +146,20 @@ public class EventController {
 //        PagedModel<EntityModel<Event>> pagedModel = assembler.toModel(page, entity -> EventModel.of(entity));
         pagedModel.add(Link.of("/docs/index-kr.html#resources-events-list").withRel("profile"));
         return ResponseEntity.ok(pagedModel);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity getEvent(@PathVariable Integer id) {
+
+        Optional<Event> optionalEvent = this.eventRepository.findById(id);
+
+        if(optionalEvent.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Event event = optionalEvent.get();
+        EventResource eventResource = new EventResource(event);
+        eventResource.add(Link.of("/docs/index-kr.html#resources-events-get").withRel("profile"));
+        return ResponseEntity.ok(eventResource);
     }
 }
