@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.*;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
@@ -160,6 +161,41 @@ public class EventController {
         Event event = optionalEvent.get();
         EventResource eventResource = new EventResource(event);
         eventResource.add(Link.of("/docs/index-kr.html#resources-events-get").withRel("profile"));
+        return ResponseEntity.ok(eventResource);
+    }
+
+    @PutMapping
+    public @ResponseBody ResponseEntity eventUpdate(@RequestBody @Valid Event event, Errors errors) {
+
+        // request body mapping validate error return Bad-Request
+        if(errors.hasErrors()) {
+            log.error("event request body mapping validate has error.");
+            return badRequest(errors);
+        }
+
+        // event validate error retrun Bad-Request
+//        EventDto eventDto = this.modelMapper.map(event, EventDto.class);
+        this.eventValidator.validate(event, errors);
+        if(errors.hasErrors()) {
+            log.error("eventValidation has error.");
+            return badRequest(errors);
+        }
+
+        // auth check
+        if(!event.getName().equalsIgnoreCase("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        // not found event
+        if(this.eventRepository.findById(event.getId()).isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+
+        Event updatedEvent = this.eventRepository.save(event);
+
+        EventResource eventResource = new EventResource(updatedEvent);
+        eventResource.add(Link.of("/docs/index-kr.html#resources-events-update").withRel("profile"));
         return ResponseEntity.ok(eventResource);
     }
 }

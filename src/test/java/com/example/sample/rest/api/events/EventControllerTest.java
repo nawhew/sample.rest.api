@@ -25,8 +25,7 @@ import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.li
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -304,6 +303,30 @@ public class EventControllerTest {
         this.mockMvc.perform(get("/api/events/{id}", "100")
                 )
                 .andExpect(status().isNotFound())
+                .andDo(print())
+        ;
+    }
+
+    @Test
+    @TestDescription("존재하는 이벤트를 수정하는 테스트")
+    public void eventsUpdate() throws Exception {
+        //given
+        Event event = this.generateEvent(100);
+        System.out.println("event.getId() : " + event.getId() + " / name : " + event.getName());
+        this.eventRepository.flush();
+        event.setName("admin");
+
+        //when & then
+        this.mockMvc.perform(put("/api/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding("UTF-8")
+                        .accept(MediaTypes.HAL_JSON) // 어떤 타입의 응답을 원하는지 AcceptHeader 통해 알려 줌
+                        .content(objectMapper.writeValueAsString(event))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
                 .andDo(print())
         ;
     }

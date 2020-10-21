@@ -1,5 +1,7 @@
 package com.example.sample.rest.api.events;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
@@ -8,6 +10,13 @@ import java.time.LocalDateTime;
 
 @Component
 public class EventValidator {
+
+    @Autowired
+    ModelMapper modelMapper;
+
+    public void validate(Event event, Errors errors) {
+        this.vaildate(this.modelMapper.map(event, EventDto.class), errors);
+    }
 
     public void vaildate(EventDto eventDto, Errors errors) {
         // 입찰이 시작되면 안되는 로직
