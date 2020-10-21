@@ -5,9 +5,10 @@ import com.example.sample.rest.api.index.IndexController;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.Links;
-import org.springframework.hateoas.MediaTypes;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.*;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -100,6 +101,7 @@ public class EventController {
         return ResponseEntity.created(createdUri).body(eventResource);
     }
 
+    // return bad-request ResponseEntity used ErrorResource
     private ResponseEntity badRequest(Errors errors) {
         return ResponseEntity.badRequest().body(new ErrorsResource(errors));
     }
@@ -126,5 +128,23 @@ public class EventController {
                 .toUri();
 
         return ResponseEntity.created(createdUri).body(event);
+    }
+
+    /*
+    * Page 관련 헤더 값이 오면 해당 컨트롤러가 호출 된다
+    *
+    * 앞뒤 페이지에 대한 정보가 없을 때 link를 담아 줘야하는데
+    * 이전처럼 Resource를 만들지 않고
+    * PagedResourcesAssembler<T>를 사용하여 repository에서 받아온 페이지를 Model(before. Resource)로 변경 할 수 있음.
+    * */
+    @GetMapping
+    public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
+
+        Page<Event> page = this.eventRepository.findAll(pageable);
+//        PagedModel<EntityModel<Event>> pagedModel = assembler.toModel(page, entity -> new EventResource(entity));
+        PagedModel<EntityModel<Event>> pagedModel = assembler.toModel(page, entity -> EventResource.of(entity));
+//        PagedModel<EntityModel<Event>> pagedModel = assembler.toModel(page, entity -> EventModel.of(entity));
+        pagedModel.add(Link.of("/docs/index-kr.html#resources-events-list").withRel("profile"));
+        return ResponseEntity.ok(pagedModel);
     }
 }

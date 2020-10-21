@@ -21,12 +21,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.stream.IntStream;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -52,6 +54,8 @@ public class EventControllerTest {
 
     /*@MockBean
     EventRepository eventRepository;*/
+    @Autowired
+    EventRepository eventRepository;
 
     @Test
     @TestDescription("정상적으로 이벤트를 생성하는 테스트")
@@ -232,6 +236,47 @@ public class EventControllerTest {
                 .andExpect(jsonPath("_links.index").exists())
                 .andDo(print())
                 ;
+    }
+
+    @Test
+    @TestDescription("30개의 이벤트를 10개씩 조회 할 때 두번째 페이지 조회 테스트")
+    public void queryEvents() throws Exception {
+        //given
+        IntStream.range(0, 30).forEach(i -> this.generateEvent(i));
+
+        //when
+        this.mockMvc.perform(get("/api/events")
+                    .param("page", "1") // start index : 0
+                    .param("size", "10")
+                    .param("sort", "name,DESC")
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("page").exists())
+                .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andDo(print())
+                .andDo(document("query-events"))
+                ;
+    }
+
+    private void generateEvent(int i) {
+        Event event = Event.builder()
+                .name("test event " + i)
+                .description("test!! event " + i)
+                .beginEnrollmentDateTime(LocalDateTime.of(2020, 10, 15, 16, 55))
+                .closeEnrollmentDateTime(LocalDateTime.of(2020, 10, 16, 16, 55))
+                .beginEventDateTime(LocalDateTime.of(2020, 10, 20, 16, 55))
+                .endEventDateTime(LocalDateTime.of(2020, 10, 25, 16, 55))
+                .basePrice(100)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("my home")
+                .free(false)
+                .offline(false)
+                .build()
+                ;
+        this.eventRepository.save(event);
     }
 
 }
