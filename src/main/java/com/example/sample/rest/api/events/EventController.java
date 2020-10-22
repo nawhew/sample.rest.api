@@ -113,7 +113,8 @@ public class EventController {
      * @return
      */
 //    @PostMapping("/api/events")
-    public /*@ResponseBody*/ ResponseEntity createEvent2(@RequestBody Event event) {
+    @Deprecated
+    public /*@ResponseBody*/ ResponseEntity createEventOld(@RequestBody Event event) {
 
         // id setting
         event.setId(10); //우선 임의의 값 세팅
@@ -164,6 +165,51 @@ public class EventController {
         return ResponseEntity.ok(eventResource);
     }
 
+
+    @PutMapping("/{id}")
+    public @ResponseBody ResponseEntity eventUpdate(@PathVariable Integer id
+                                                    , @RequestBody @Valid EventDto eventDto
+                                                    , Errors errors) {
+
+        // not found event
+        Optional<Event> optionalEvent = this.eventRepository.findById(id);
+        if(optionalEvent.isEmpty()) {
+            log.error("event is not found. id : " + id);
+            return ResponseEntity.notFound().build();
+        }
+
+        // request body mapping validate error return Bad-Request
+        if(errors.hasErrors()) {
+            log.error("event request body mapping validate has error.");
+            return badRequest(errors);
+        }
+
+        // event validate error retrun Bad-Request
+        this.eventValidator.vaildate(eventDto, errors);
+        if(errors.hasErrors()) {
+            log.error("eventValidation has error.");
+            return badRequest(errors);
+        }
+
+        // auth check
+        if(!eventDto.getName().equalsIgnoreCase("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+
+        // update event
+//        Event event = this.modelMapper.map(eventDto, Event.class);
+//        event.setId(id);
+        Event existingEvent = optionalEvent.get();
+        this.modelMapper.map(eventDto, existingEvent);
+        Event updatedEvent = this.eventRepository.save(existingEvent);
+
+        // set return resource
+        EventResource eventResource = new EventResource(updatedEvent);
+        eventResource.add(Link.of("/docs/index-kr.html#resources-events-update").withRel("profile"));
+        return ResponseEntity.ok(eventResource);
+    }
+
     @PutMapping
     public @ResponseBody ResponseEntity eventUpdate(@RequestBody @Valid Event event, Errors errors) {
 
@@ -188,12 +234,14 @@ public class EventController {
 
         // not found event
         if(this.eventRepository.findById(event.getId()).isEmpty()) {
+            log.error("event is not found. id : " + event.getId());
             return ResponseEntity.notFound().build();
         }
 
-
+        // update event
         Event updatedEvent = this.eventRepository.save(event);
 
+        // set return resource
         EventResource eventResource = new EventResource(updatedEvent);
         eventResource.add(Link.of("/docs/index-kr.html#resources-events-update").withRel("profile"));
         return ResponseEntity.ok(eventResource);

@@ -1,11 +1,14 @@
 package com.example.sample.rest.api.events;
 
+import com.example.sample.rest.api.common.BaseContorllerTest;
 import com.example.sample.rest.api.common.RestDocsConfiguration;
 import com.example.sample.rest.api.common.TestDescription;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import junitparams.Parameters;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,24 +32,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
-//@WebMvcTest
-@SpringBootTest
-/*
-* @SpringBootTest의 webEnvironment값이 SpringBootTest.WebEnvironment.MOCK)가 default이기 때문에
-* 설정을 안해도 Mock을 계속 사용 가능
-* 대신 아래와 같이 AutoConfigure 어노테이션을 달아 주어야 한다.
-* */
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs
-@Import(RestDocsConfiguration.class)
-public class EventControllerTest {
 
-    @Autowired
-    MockMvc mockMvc;
-
-    @Autowired
-    ObjectMapper objectMapper;
+public class EventControllerTest extends BaseContorllerTest {
 
     /*@MockBean
     EventRepository eventRepository;*/
@@ -272,7 +259,7 @@ public class EventControllerTest {
                 .offline(false)
                 .build()
                 ;
-        return this.eventRepository.save(event);
+        return this.eventRepository.saveAndFlush(event);
     }
 
     @Test
@@ -307,8 +294,9 @@ public class EventControllerTest {
         ;
     }
 
-    @Test
-    @TestDescription("존재하는 이벤트를 수정하는 테스트")
+//    @Test
+//    @TestDescription("존재하는 이벤트를 수정하는 테스트")
+    @Deprecated
     public void eventsUpdate() throws Exception {
         //given
         Event event = this.generateEvent(100);
@@ -327,6 +315,95 @@ public class EventControllerTest {
                 .andExpect(jsonPath("id").exists())
                 .andExpect(jsonPath("_links.self").exists())
                 .andExpect(jsonPath("_links.profile").exists())
+                .andDo(print())
+        ;
+    }
+
+
+    @Test
+    @TestDescription("ID값을 받아서 존재하는 이벤트를 수정하는 테스트")
+    public void eventsUpdateById() throws Exception {
+        //given
+        Event event = this.generateEvent(100);
+
+        EventDto eventDto = this.modelMapper.map(event, EventDto.class);
+        String updateName = "admin";
+        eventDto.setName(updateName);
+
+        //when & then
+        this.mockMvc.perform(put("/api/events/{id}", event.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(eventDto))
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("name").value(updateName))
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andDo(print())
+        ;
+    }
+    
+    @Test
+    @TestDescription("존재하지 않는 이벤트에 수정요청을 하는 경우 404 발생")
+    public void eventsUpdate404() throws Exception {
+        //given
+        Event event = this.generateEvent(100);
+
+        EventDto eventDto = this.modelMapper.map(event, EventDto.class);
+        eventDto.setName("admin");
+
+        //when & then
+        this.mockMvc.perform(put("/api/events/{id}", "1111")
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(eventDto))
+                )
+                .andExpect(status().isNotFound())
+                .andDo(print())
+        ;
+    }
+    
+    @Test
+    @TestDescription("권한이 없는 경우 403 오류 발생")
+    public void eventsUpdate403() throws Exception {
+        //given
+        Event event = this.generateEvent(100);
+
+        EventDto eventDto = this.modelMapper.map(event, EventDto.class);
+
+        //when & then
+        this.mockMvc.perform(put("/api/events/{id}", event.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(eventDto))
+                )
+                .andExpect(status().isForbidden())
+                .andDo(print())
+        ;
+    }
+
+    @Test
+    @TestDescription("데이터바인딩 및 도메인 로직 이상 시 400 오류 발생")
+    public void eventsUpdate400() throws Exception {
+        //given
+        Event event = this.generateEvent(100);
+
+        EventDto eventDto = this.modelMapper.map(event, EventDto.class);
+        eventDto.setBasePrice(1111111);
+
+        //when & then
+        this.mockMvc.perform(put("/api/events/{id}", event.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .characterEncoding("UTF-8")
+                .accept(MediaTypes.HAL_JSON)
+                .content(objectMapper.writeValueAsString(eventDto))
+                )
+                .andExpect(status().isBadRequest())
                 .andDo(print())
         ;
     }

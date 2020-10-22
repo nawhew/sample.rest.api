@@ -1,5 +1,6 @@
 package com.example.sample.rest.api.index;
 
+import com.example.sample.rest.api.common.BaseContorllerTest;
 import com.example.sample.rest.api.common.RestDocsConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,15 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureRestDocs
-@Import(RestDocsConfiguration.class)
-public class IndexControllerTest {
-
-    @Autowired
-    MockMvc mockMvc;
+public class IndexControllerTest extends BaseContorllerTest {
 
     @Test
     public void index() throws Exception {
