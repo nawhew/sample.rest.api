@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -59,11 +60,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     /* check request (checked in spring-security)*/
-/*    @Override
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
+        /*http.authorizeRequests()
                 .mvcMatchers("/docs/index*.html").anonymous()
                 .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).anonymous()
+                ;*/
+        http
+            .anonymous()
+                .and()
+            .formLogin()
+//                .loginPage() // 로그인 페이지 설정도 가능, 설정없으면 기본 제공 로그인 페이지 사용
+                .and()
+            .authorizeRequests() // request에 대한 인증 설정
+                .mvcMatchers(HttpMethod.GET, "/api/**") // Get으로 온 /api의 모든 요청은
+                    .anonymous() // 익명 사용자도 접근이 가능하다
+                .anyRequest() // 설정 외의 요청은
+                    .authenticated() //인증이 필요하다
                 ;
-    }*/
+
+    }
 }
