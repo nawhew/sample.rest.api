@@ -73,8 +73,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .loginPage() // 로그인 페이지 설정도 가능, 설정없으면 기본 제공 로그인 페이지 사용
                 .and()
             .authorizeRequests() // request에 대한 인증 설정
-                .mvcMatchers(HttpMethod.GET, "/api/**") // Get으로 온 /api의 모든 요청은
-                    .anonymous() // 익명 사용자도 접근이 가능하다
+//                .mvcMatchers(HttpMethod.GET, "/api/**") // Get으로 온 /api의 모든 요청은
+//                    .anonymous() // 익명 사용자도 접근이 가능하다
                 .anyRequest() // 설정 외의 요청은
                     .authenticated() //인증이 필요하다
                 ;
