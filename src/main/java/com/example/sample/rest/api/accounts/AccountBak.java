@@ -5,7 +5,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.util.Set;
 
-@Entity
+//@Entity
 @Getter @Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true) //@EqualsAndHashCode(of = "id")
 @Builder @NoArgsConstructor @AllArgsConstructor

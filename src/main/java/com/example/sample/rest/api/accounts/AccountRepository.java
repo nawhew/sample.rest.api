@@ -5,8 +5,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
 
-public interface AccountRepository extends JpaRepository<Account, Integer> {
-
-    // find Account by email
+//public interface AccountRepository extends JpaRepository<Account, Integer> {
+public interface AccountRepository {
+        // find Account by email
     Optional<Account> findByEmail(String email);
 }

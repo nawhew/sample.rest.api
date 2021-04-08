@@ -15,7 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Service
+//@Service
 public class AccountService implements UserDetailsService {
 
     private final AccountRepository accountRepository;
@@ -31,7 +31,8 @@ public class AccountService implements UserDetailsService {
     /* save Account (encode password by spring-security passwordEncoder)*/
     public Account saveAccount(Account account) {
         account.setPassword(this.passwordEncoder.encode(account.getPassword()));
-        return this.accountRepository.save(account);
+//        return this.accountRepository.save(account);
+        return null;
     }
 
     /**
