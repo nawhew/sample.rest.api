@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+#### Oauth properties
+application-oauth.properties

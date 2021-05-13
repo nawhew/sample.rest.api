@@ -1,24 +1,14 @@
 package com.example.sample.rest.api.events;
 
 import com.example.sample.rest.api.common.BaseContorllerTest;
-import com.example.sample.rest.api.common.RestDocsConfiguration;
 import com.example.sample.rest.api.common.TestDescription;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import junitparams.Parameters;
 import org.hamcrest.Matchers;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.time.LocalDateTime;
 import java.util.stream.IntStream;
@@ -222,6 +212,7 @@ public class EventControllerTest extends BaseContorllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     @TestDescription("30개의 이벤트를 10개씩 조회 할 때 두번째 페이지 조회 테스트")
     public void queryEvents() throws Exception {
         //given
