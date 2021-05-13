@@ -1,6 +1,6 @@
 package com.example.sample.rest.api.index;
 
-import com.example.sample.rest.api.events.EventController;
+import com.example.sample.rest.api.events.web.EventController;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

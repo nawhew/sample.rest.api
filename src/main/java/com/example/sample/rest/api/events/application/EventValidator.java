@@ -1,11 +1,12 @@
-package com.example.sample.rest.api.events;
+package com.example.sample.rest.api.events.application;
 
+import com.example.sample.rest.api.events.domain.Event;
+import com.example.sample.rest.api.events.dto.EventDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Component

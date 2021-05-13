@@ -2,6 +2,10 @@ package com.example.sample.rest.api.events;
 
 import com.example.sample.rest.api.common.BaseContorllerTest;
 import com.example.sample.rest.api.common.TestDescription;
+import com.example.sample.rest.api.events.domain.Event;
+import com.example.sample.rest.api.events.domain.EventRepository;
+import com.example.sample.rest.api.events.domain.EventStatus;
+import com.example.sample.rest.api.events.dto.EventDto;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,5 +1,7 @@
-package com.example.sample.rest.api.events;
+package com.example.sample.rest.api.events.domain;
 
+import com.example.sample.rest.api.events.domain.Event;
+import com.example.sample.rest.api.events.web.EventController;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;

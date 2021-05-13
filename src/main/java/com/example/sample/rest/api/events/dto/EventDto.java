@@ -1,4 +1,4 @@
-package com.example.sample.rest.api.events;
+package com.example.sample.rest.api.events.dto;
 
 import lombok.*;
 

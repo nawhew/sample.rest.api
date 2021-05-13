@@ -1,6 +1,11 @@
-package com.example.sample.rest.api.events;
+package com.example.sample.rest.api.events.web;
 
 import com.example.sample.rest.api.common.ErrorsResource;
+import com.example.sample.rest.api.events.application.EventValidator;
+import com.example.sample.rest.api.events.domain.Event;
+import com.example.sample.rest.api.events.domain.EventRepository;
+import com.example.sample.rest.api.events.domain.EventResource;
+import com.example.sample.rest.api.events.dto.EventDto;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
