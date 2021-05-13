@@ -1,4 +1,4 @@
-package com.example.sample.rest.api.events;
+package com.example.sample.rest.api.events.domain;
 
 import com.example.sample.rest.api.accounts.Account;
 import lombok.*;

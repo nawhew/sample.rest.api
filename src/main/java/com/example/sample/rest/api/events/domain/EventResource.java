@@ -1,10 +1,10 @@
-package com.example.sample.rest.api.events;
+package com.example.sample.rest.api.events.domain;
 
+import com.example.sample.rest.api.events.domain.Event;
+import com.example.sample.rest.api.events.web.EventController;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
-import org.springframework.hateoas.RepresentationModel;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 
 import java.util.ArrayList;
 import java.util.List;

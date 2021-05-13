@@ -1,11 +1,10 @@
 package com.example.sample.rest.api.events;
 
+import com.example.sample.rest.api.events.domain.Event;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
