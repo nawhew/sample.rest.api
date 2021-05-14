@@ -35,6 +35,7 @@ public class EventControllerTest extends BaseContorllerTest {
     EventRepository eventRepository;
 
     @Test
+    @WithMockUser(roles = "USER")
     @TestDescription("정상적으로 이벤트를 생성하는 테스트")
     public void createEvent() throws Exception {
 
@@ -135,6 +136,7 @@ public class EventControllerTest extends BaseContorllerTest {
                                 , fieldWithPath("free").description("it tells if this event is free or not")
                                 , fieldWithPath("offline").description("it tells if this event is offline or not(online)")
                                 , fieldWithPath("eventStatus").description("event status")
+                                , fieldWithPath("manager").description("event manager user")
                                 /* 위에 links에서 체크했지만 현재 Restdocs에서는 어쩔수가 없음.
                                  * responseFields를 relaxedResponseFields로 변경하여 일부만 체크하게 해도 되지만,
                                  * 전체를 체크하지 않고 일부만 문서화 하기 때문에... 비추!*/
@@ -148,6 +150,7 @@ public class EventControllerTest extends BaseContorllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     @TestDescription("입력 받을 수 없는 값을 사용한 경우에 오류가 발생하는 테스트")
     public void createEvent_BadRequest() throws Exception {
 
@@ -180,6 +183,7 @@ public class EventControllerTest extends BaseContorllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     @TestDescription("입력 값이 비어있는 경우에 오류가 발생하는 테스트")
     public void createEvent_Bad_Request_Empty_Input() throws Exception {
         EventDto eventDto = EventDto.builder()
@@ -258,6 +262,7 @@ public class EventControllerTest extends BaseContorllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     @TestDescription("기존의 이벤트를 하나만 조회하기")
     public void getEvent() throws Exception {
         //given
@@ -276,6 +281,7 @@ public class EventControllerTest extends BaseContorllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     @TestDescription("없는 이벤트 조회시 404 응답 받기")
     public void getNoEvent404() throws Exception {
         //given
@@ -316,6 +322,7 @@ public class EventControllerTest extends BaseContorllerTest {
 
 
     @Test
+    @WithMockUser(roles = "USER")
     @TestDescription("ID값을 받아서 존재하는 이벤트를 수정하는 테스트")
     public void eventsUpdateById() throws Exception {
         //given
@@ -342,6 +349,7 @@ public class EventControllerTest extends BaseContorllerTest {
     }
     
     @Test
+    @WithMockUser(roles = "USER")
     @TestDescription("존재하지 않는 이벤트에 수정요청을 하는 경우 404 발생")
     public void eventsUpdate404() throws Exception {
         //given
@@ -363,6 +371,7 @@ public class EventControllerTest extends BaseContorllerTest {
     }
     
     @Test
+    @WithMockUser(roles = "A")
     @TestDescription("권한이 없는 경우 403 오류 발생")
     public void eventsUpdate403() throws Exception {
         //given
@@ -383,6 +392,7 @@ public class EventControllerTest extends BaseContorllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     @TestDescription("데이터바인딩 및 도메인 로직 이상 시 400 오류 발생")
     public void eventsUpdate400() throws Exception {
         //given

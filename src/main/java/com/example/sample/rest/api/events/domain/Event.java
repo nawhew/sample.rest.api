@@ -1,6 +1,6 @@
 package com.example.sample.rest.api.events.domain;
 
-import com.example.sample.rest.api.accounts.Account;
+import com.example.sample.rest.api.domain.User;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder @AllArgsConstructor @NoArgsConstructor
 public class Event {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @NotEmpty
@@ -57,7 +57,7 @@ public class Event {
     private EventStatus eventStatus = EventStatus.DRAFT;
 
     @ManyToOne
-    private Account manager;
+    private User manager;
 
     public void update() {
         if(this.basePrice == 0 && this.maxPrice == 0) {
