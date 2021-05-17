@@ -16,6 +16,10 @@ import org.springframework.hateoas.*;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
@@ -145,13 +149,17 @@ public class EventController {
     * PagedResourcesAssembler<T>를 사용하여 repository에서 받아온 페이지를 Model(before. Resource)로 변경 할 수 있음.
     * */
     @GetMapping
-    public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
-
+    public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler
+                                                        , @AuthenticationPrincipal User securityUser) {
         Page<Event> page = this.eventRepository.findAll(pageable);
 //        PagedModel<EntityModel<Event>> pagedModel = assembler.toModel(page, entity -> new EventResource(entity));
         PagedModel<EntityModel<Event>> pagedModel = assembler.toModel(page, entity -> EventResource.of(entity));
 //        PagedModel<EntityModel<Event>> pagedModel = assembler.toModel(page, entity -> EventModel.of(entity));
         pagedModel.add(Link.of("/docs/index-kr.html#resources-events-list").withRel("profile"));
+
+        if(securityUser != null) {
+            pagedModel.add(linkTo(EventController.class).withRel("create-event"));
+        }
         return ResponseEntity.ok(pagedModel);
     }
 
